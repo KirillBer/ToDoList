@@ -1,7 +1,4 @@
-﻿using Microsoft.Maui;
-using System.Diagnostics.Metrics;
-
-namespace ToDoList
+﻿namespace ToDoList
 {
     public partial class MainPage : ContentPage
     {
@@ -16,7 +13,7 @@ namespace ToDoList
         {
             TaskCount.Text = "Всего задач: " + _counter.ToString();
         }
-        private void OnCreateBtnClicked(object? sender, EventArgs e)
+        private void OnCreateBtnClicked(object sender, EventArgs e)
         {
             if (TextInput.Text.Length < 3) return;
 
@@ -105,20 +102,20 @@ namespace ToDoList
 
                 saveButton.Clicked += (save_s, save_args) =>
                 {
-                    // Сохраняем изменения
+                    //Сохраняем изменения
                     newLabel.Text = editor.Text;
 
-                    // Восстанавливаем исходный вид
+                    //Восстанавливаем исходный вид с новым значением
                     RestoreContainerView(container, newLabel, changeButton, deleteButton);
                 };
 
                 cancelButton.Clicked += (cancel_s, cancel_args) =>
                 {
-                    // Отменяем изменения, восстанавливаем исходный вид
+                    //Отменяем изменения, восстанавливаем исходный вид
                     RestoreContainerView(container, newLabel, changeButton, deleteButton);
                 };
 
-                // Добавляем элементы в контейнер для редактирования
+                //Добавляем элементы в контейнер для редактирования
                 container.Children.Add(editor);
                 container.Children.Add(saveButton);
                 container.Children.Add(cancelButton);
@@ -127,7 +124,7 @@ namespace ToDoList
 
             deleteButton.Clicked += (s, args) =>
             {
-                // Удаляем контейнер с задачей из родительского контейнера
+                //Удаляем контейнер с задачей из родительского контейнера
                 if (container.Parent is Layout parentLayout)
                 {
                     parentLayout.Children.Remove(container);
