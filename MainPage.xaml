@@ -1,46 +1,130 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:ToDoList.ViewModels"
+             xmlns:models="clr-namespace:ToDoList.Models"
              x:Class="ToDoList.MainPage"
-             BackgroundColor="Yellow">
+             x:DataType="viewModels:MainViewModel">
+
+    <ContentPage.Resources>
+        <!-- Стандартный стиль для кнопок -->
+        <Style x:Key="BtnStdStyle" TargetType="Button">
+            <Setter Property="MinimumHeightRequest" Value="40" />
+            <Setter Property="WidthRequest" Value="30" />
+            <Setter Property="CornerRadius" Value="0" />
+            <Setter Property="FontSize" Value="18" />
+            <Setter Property="TextColor" Value="White"/>
+            <Setter Property="CommandParameter" Value="{Binding .}"/>
+        </Style>
+    </ContentPage.Resources>
+    
+    <ContentPage.BindingContext>
+        <viewModels:MainViewModel/>
+    </ContentPage.BindingContext>
 
     <ScrollView>
-        <VerticalStackLayout
-            Padding="30,0"
-            Spacing="25">
-
-
+        <VerticalStackLayout Padding="30,0" Spacing="25">
+            <!-- Поле ввода заголовка задачи и кнопки добавления -->
             <HorizontalStackLayout HorizontalOptions="Center">
                 <Editor
-                    Text=""
+                    Text="{Binding TaskTitle}"
                     Placeholder="Введите название задачи"
                     PlaceholderColor="DarkGray"
-                    BackgroundColor="DarkGray"
                     HeightRequest="40"
-                    WidthRequest="400"
-                    x:Name="TextInput"/>
+                    WidthRequest="400"/>
                 <Button
-                    x:Name="CreateBtn"
-                    Text="Создать" 
-                    Clicked="OnCreateBtnClicked"
+                    Text="Создать"
+                    Command="{Binding CreateTaskCommand}"
                     HeightRequest="40"
                     WidthRequest="100"/>
             </HorizontalStackLayout>
+
+            <!-- Заголовок Список задач -->
+            <Label
+                Text="Список задач"
+                SemanticProperties.HeadingLevel="Level1"
+                FontSize="24"
+                HorizontalOptions="Center"/>
+
+            <!-- Счётчик количества задач -->
+            <StackLayout HorizontalOptions="Center" Orientation="Horizontal">
                 <Label
-                    Text="Список задач"
-                    FontSize="32"
-                    HorizontalOptions="Center"/>
+                    Text="Всего задач:"
+                    FontSize="14"/>
                 <Label
-                    Text="Всего задач: 0"
+                    Text="{Binding Count}"
                     FontSize="14"
-                    x:Name="TaskCount"
-                    HorizontalOptions="Center"/>
-            <ScrollView>
-                <VerticalStackLayout x:Name="LabelsContainer"
-                               Spacing="10"
-                               HorizontalOptions="Center"/>
-            </ScrollView>
+                    Margin="10,0,0,0"/>
+            </StackLayout>
+
+            <!-- Список задач -->
+            <CollectionView ItemsSource="{Binding Tasks}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:ToDoTask">
+                        <!-- Контейнер задач -->
+                        <VerticalStackLayout>
+                            <!-- Одна задача -->
+                            <HorizontalStackLayout HorizontalOptions="Center" Margin="0, 10">
+                                <!-- Заголовок задачи -->
+                                <Label
+                                    Text="{Binding Title}"
+                                    FontSize="16"
+                                    TextColor="Black"
+                                    BackgroundColor="White"
+                                    WidthRequest="500"
+                                    VerticalOptions="Center"
+                                    MinimumHeightRequest="40"
+                                    IsVisible="{Binding IsDisplaying}"/>
+
+                                <!-- Поле для ввода нового заголовка задачи -->
+                                <Editor
+                                    Text="{Binding EditedText}"
+                                    FontSize="16"
+                                    BackgroundColor="White"
+                                    TextColor="Black"
+                                    WidthRequest="562"
+                                    MinimumHeightRequest="40"
+                                    IsVisible="{Binding IsEditing}"/>
+
+                                <!-- Кнопка для начала изменения задачи -->
+                                <Button
+                                    Style="{StaticResource BtnStdStyle}"
+                                    Text="Изменить"
+                                    WidthRequest="120"
+                                    BackgroundColor="DarkGray"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:MainViewModel}}, Path=EditTaskCommand}"
+                                    IsVisible="{Binding IsDisplaying}"/>
+
+                                <!-- Кнопка принятия изменений -->
+                                <Button
+                                    Style="{StaticResource BtnStdStyle}"
+                                    Text="✓"
+                                    WidthRequest="50"
+                                    BackgroundColor="Green"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:MainViewModel}}, Path=SaveTaskCommand}"
+                                    IsVisible="{Binding IsEditing}"/>
+
+                                <!-- Кнопка отмены изменений -->
+                                <Button
+                                    Style="{StaticResource BtnStdStyle}"
+                                    Text="×"
+                                    WidthRequest="50"
+                                    BackgroundColor="Red"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:MainViewModel}}, Path=CancelEditCommand}"
+                                    IsVisible="{Binding IsEditing}"/>
+
+                                <!-- Кнопка удаления задачи -->
+                                <Button
+                                    Style="{StaticResource BtnStdStyle}"
+                                    Text="×"
+                                    BackgroundColor="Red"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:MainViewModel}}, Path=DeleteTaskCommand}"
+                                    IsVisible="{Binding IsDisplaying}"/>
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
         </VerticalStackLayout>
     </ScrollView>
-
 </ContentPage>
